@@ -1,0 +1,33 @@
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+backend/.venv/
+
+# Env
+.env
+backend/.env
+
+# Uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+
+node_modules/
+frontend/node_modules/
+
+backend/uploads/
+backend/.env
+
+__pycache__/
+
+.env
