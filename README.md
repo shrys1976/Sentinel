@@ -1,3 +1,3 @@
 # SentinelAI
 
-Monorepo containing frontend and backend for the SentinelAI ML data quality platform.
+SentinelAI is a ML data quality platform.
