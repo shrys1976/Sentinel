@@ -6,6 +6,23 @@ from ...schemas.dataset_schema import DatasetUploadResponse
 from ...services.dataset_service import create_dataset
 from ...workers.analysis_worker import process_dataset
 
+from app.schemas.dataset_schema import (
+    DatasetHistoryResponse,
+    DatasetHistoryItem
+)
+
+from app.services.dataset_service import (
+    get_datasets_for_user
+)
+
+from app.core.dependencies import (
+
+    get_request_context,
+    RequestContext
+
+)
+
+
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
 
@@ -41,4 +58,49 @@ def upload_dataset(
         rows=dataset.rows,
         columns=dataset.columns,
         status=dataset.status,
+    )
+
+
+@router.get(
+
+    "",
+    response_model=DatasetHistoryResponse
+
+)
+
+def dataset_history(
+
+    context: RequestContext = Depends(
+        get_request_context
+    ),
+
+    db: Session = Depends(get_db)
+
+):
+
+    datasets = get_datasets_for_user(
+
+        db,
+        context.user_id,
+        context.session_id
+
+    )
+    response = [
+
+        DatasetHistoryItem(
+
+            dataset_id=d.id,
+            name=d.name,
+            status=d.status,
+            rows=d.rows,
+            columns=d.columns,
+            created_at=str(d.created_at)
+
+        )
+        for d in datasets
+    ]
+
+    return DatasetHistoryResponse(
+        datasets=response
+
     )
