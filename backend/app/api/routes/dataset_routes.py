@@ -22,6 +22,16 @@ from app.core.dependencies import (
 
 )
 
+from app.utils.file_validation import (
+
+    validate_file_extension,
+
+    validate_file_size,
+
+    validate_csv_structure
+
+)
+
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -53,6 +63,10 @@ def upload_dataset(
     # Queue async-style background processing after dataset exists.
     background_tasks.add_task(process_dataset, dataset.id)
 
+    validate_file_extension(file)
+    validate_file_size(file)
+    validate_csv_structure(file)
+    
     return DatasetUploadResponse(
         dataset_id=dataset.id,
         rows=dataset.rows,

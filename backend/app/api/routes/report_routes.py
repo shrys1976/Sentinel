@@ -81,7 +81,7 @@ def fetch_report(
 
     if dataset.status == "failed":
 
-        raise HTTPException(
+        raise HTTPException(                
             status_code=500,
 
             detail="Analysis failed"
