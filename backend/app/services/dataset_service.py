@@ -54,3 +54,19 @@ def get_datasets_for_user(
     ).order_by(
         Dataset.created_at.desc()
     ).all()
+
+
+def user_owns_dataset(
+
+    dataset,
+    user_id,
+    session_id
+
+):
+
+
+    if user_id:
+        return dataset.user_id == user_id
+
+
+    return dataset.session_id == session_id        
