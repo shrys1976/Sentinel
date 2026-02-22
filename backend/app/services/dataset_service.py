@@ -69,4 +69,32 @@ def user_owns_dataset(
         return dataset.user_id == user_id
 
 
-    return dataset.session_id == session_id        
+    return dataset.session_id == session_id
+
+
+def get_dataset_status(
+
+
+    db,
+    dataset_id,
+    user_id,
+    session_id
+):
+
+    dataset = db.query(Dataset).filter(
+        Dataset.id == dataset_id
+    ).first()
+
+
+    if not dataset:
+        return None, "not_found"
+
+    if not user_owns_dataset(
+        dataset,
+        user_id,
+        session_id        
+    ):
+
+         return None, "forbidden"
+
+    return dataset, "ok"         

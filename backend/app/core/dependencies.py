@@ -2,6 +2,8 @@ from csv import unregister_dialect
 from fastapi import Header
 from typing import Optional
 import uuid
+from fastapi import HTTPException
+
 
 class RequestContext:
 
@@ -31,3 +33,4 @@ def get_request_context(
         session_id = x_session_id
 
     )        
+

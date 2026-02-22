@@ -32,6 +32,13 @@ from app.utils.file_validation import (
 
 )
 
+from app.schemas.dataset_schema import(
+    DatasetStatusResponse
+)
+from app.services.dataset_service import(
+    get_dataset_status
+)
+
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -66,7 +73,7 @@ def upload_dataset(
     validate_file_extension(file)
     validate_file_size(file)
     validate_csv_structure(file)
-    
+
     return DatasetUploadResponse(
         dataset_id=dataset.id,
         rows=dataset.rows,
@@ -116,5 +123,74 @@ def dataset_history(
 
     return DatasetHistoryResponse(
         datasets=response
+
+    )
+
+@router.get(
+
+    "/{dataset_id}/status",
+
+    response_model=DatasetStatusResponse
+
+)
+
+def dataset_status(
+
+    dataset_id: str,
+
+    context: RequestContext = Depends(
+
+        get_request_context
+
+    ),
+
+    db: Session = Depends(get_db)
+
+):
+
+    dataset, status = get_dataset_status(
+
+        db,
+
+        dataset_id,
+
+        context.user_id,
+
+        context.session_id
+
+    )
+
+
+    if status == "not_found":
+
+        raise HTTPException(
+
+            status_code=404,
+
+            detail="Dataset not found"
+
+        )
+
+
+    if status == "forbidden":
+
+        raise HTTPException(
+
+            status_code=403,
+
+            detail="Access denied"
+
+        )
+
+
+    return DatasetStatusResponse(
+
+        dataset_id=dataset.id,
+
+        status=dataset.status,
+
+        rows=dataset.rows,
+
+        columns=dataset.columns
 
     )

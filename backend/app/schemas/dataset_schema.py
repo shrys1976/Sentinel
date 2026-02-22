@@ -21,4 +21,11 @@ class DatasetHistoryItem(BaseModel):
 
 class DatasetHistoryResponse(BaseModel):
 
-    datasets: List[DatasetHistoryItem]    
+    datasets: List[DatasetHistoryItem]
+
+
+class DatasetStatusResponse(BaseModel):
+    dataset_id: str
+    status: str
+    rows: int|None
+    columns : int | None        
