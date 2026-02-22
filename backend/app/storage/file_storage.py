@@ -1,3 +1,4 @@
+import logging
 import uuid
 import shutil
 from pathlib import Path
@@ -6,6 +7,7 @@ _BACKEND_ROOT = Path(__file__).resolve().parent.parent.parent
 UPLOAD_DIR = _BACKEND_ROOT / "uploads"
 
 UPLOAD_DIR.mkdir(exist_ok=True)
+logger = logging.getLogger(__name__)
 
 
 def save_uploaded_file(file):
@@ -45,5 +47,5 @@ def delete_file(path: str):
         if file_path.exists():
             file_path.unlink()
 
-    except Exception as e:
-        print("File delete failed:", e)   
+    except Exception:
+        logger.exception("file delete failed for path=%s", path)

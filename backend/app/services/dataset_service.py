@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from ..db.models import Dataset, Report
 from ..storage.file_storage import delete_file, save_uploaded_file
 from ..utils.dataframe_loader import extract_dataset_metadata
+import logging
 
+logger = logging.getLogger(__name__)
 def create_dataset(
     db: Session,
     file,

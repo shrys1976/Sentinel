@@ -1,8 +1,12 @@
+import logging
+
 from sqlalchemy.orm import Session
 
 from ..analysis_engine.pipeline import run_analysis
 from ..db.models import Dataset, Report
 from ..db.session import SessionLocal
+
+logger = logging.getLogger(__name__)
 
 
 def process_dataset(dataset_id: str) -> None:
@@ -28,10 +32,10 @@ def process_dataset(dataset_id: str) -> None:
 
         dataset.status = "completed"
         db.commit()
-    except Exception as exc:
+    except Exception:
         if dataset is not None:
             dataset.status = "failed"
             db.commit()
-        print(f"analysis worker failed for dataset {dataset_id}: {exc}")
+        logger.exception("analysis worker failed for dataset_id=%s", dataset_id)
     finally:
         db.close()
