@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from app.db.models import Dataset
-from app.storage.file_storage import save_uploaded_file
-from app.utils.dataframe_loader import extract_dataset_metadata
+from ..db.models import Dataset
+from ..storage.file_storage import save_uploaded_file
+from ..utils.dataframe_loader import extract_dataset_metadata
 
 
 def create_dataset(
@@ -31,3 +31,26 @@ def create_dataset(
     db.commit()
     db.refresh(dataset)
     return dataset
+
+
+def get_datasets_for_user(
+    db,
+    user_id,
+    session_id
+):
+
+    query = db.query(Dataset)
+
+    if user_id :
+        return query.filter(
+            Dataset.user_id == user_id
+        ).order_by(
+            Dataset.created_at.desc()
+        ).all()
+
+
+    return query.filter(
+        Dataset.session_id == session_id
+    ).order_by(
+        Dataset.created_at.desc()
+    ).all()
