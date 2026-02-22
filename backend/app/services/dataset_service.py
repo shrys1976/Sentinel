@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
 
-from ..db.models import Dataset
-from ..storage.file_storage import save_uploaded_file
+from ..db.models import Dataset, Report
+from ..storage.file_storage import delete_file, save_uploaded_file
 from ..utils.dataframe_loader import extract_dataset_metadata
-
 
 def create_dataset(
     db: Session,
@@ -98,3 +97,37 @@ def get_dataset_status(
          return None, "forbidden"
 
     return dataset, "ok"         
+
+
+def delete_dataset(
+    db: Session,
+    dataset_id: str,
+    user_id,
+    session_id,
+):
+    dataset = db.query(Dataset).filter(
+        Dataset.id == dataset_id
+    ).first()
+
+    if not dataset:
+        return "not_found"
+    if not user_owns_dataset(
+        dataset,
+        user_id,
+        session_id,
+    ):
+        return "forbidden"
+
+    # Delete all reports for this dataset first.
+    reports = db.query(Report).filter(Report.dataset_id == dataset_id).all()
+    for report in reports:
+        db.delete(report)
+
+    # Delete file from storage.
+    delete_file(dataset.file_path)
+
+    db.delete(dataset)
+    db.commit()
+
+
+    return "deleted"

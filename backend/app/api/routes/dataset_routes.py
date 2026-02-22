@@ -11,6 +11,7 @@ from ...schemas.dataset_schema import (
 )
 from ...services.dataset_service import (
     create_dataset,
+    delete_dataset,
     get_dataset_status,
     get_datasets_for_user,
 )
@@ -104,3 +105,30 @@ def dataset_status(
         rows=dataset.rows,
         columns=dataset.columns,
     )
+
+@router.delete("/{dataset_id}")
+def remove_dataset(
+    dataset_id: str,
+    context: RequestContext = Depends(get_request_context),
+    db: Session = Depends(get_db),
+):
+    result = delete_dataset(
+        db,
+        dataset_id,
+        context.user_id,
+        context.session_id,
+    )
+
+    if result == "not_found":
+        raise HTTPException(
+            status_code=404,
+            detail="Dataset not found",
+        )
+
+    if result == "forbidden":
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied",
+        )
+
+    return {"message": "Dataset deleted successfully"}
