@@ -3,6 +3,7 @@ import logging
 from app.analysis_engine.data_loader import load_dataframe
 from app.analysis_engine.analyzers.basic_stats import BasicStatsAnalyzer
 from app.analysis_engine.analyzers.missing import MissingAnalyzer
+from app.analysis_engine.analyzers.imbalance import ImbalanceAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +54,8 @@ def run_pipeline(
 
         
         BasicStatsAnalyzer(),
-        MissingAnalyzer()
-        
+        MissingAnalyzer(),
+        ImbalanceAnalyzer(),        
 
     ]
 
