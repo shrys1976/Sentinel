@@ -2,7 +2,7 @@ import logging
 
 from app.analysis_engine.data_loader import load_dataframe
 from app.analysis_engine.analyzers.basic_stats import BasicStatsAnalyzer
-
+from app.analysis_engine.analyzers.missing import MissingAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +29,7 @@ def run_pipeline(
     report = {}
 
     failed_analyzers = []
+   
 
 
     # Load Dataset
@@ -51,7 +52,9 @@ def run_pipeline(
     analyzers = [
 
         
-        BasicStatsAnalyzer
+        BasicStatsAnalyzer(),
+        MissingAnalyzer()
+        
 
     ]
 
