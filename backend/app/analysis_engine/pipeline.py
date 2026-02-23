@@ -1,16 +1,96 @@
-import pandas as pd
+import logging
 
-def run_analysis(file_path:str):
-    
-    df = pd.read_csv(file_path)
-    rows,columns = df.shape
-    missing = df.isnull().mean().to_dict()
+from app.analysis_engine.data_loader import load_dataframe
 
-    report  = {
 
-        "rows": rows,
-        "columns": columns,
-        "missing_ratio": missing
-    }
-    score = 80
-    return report,score
+logger = logging.getLogger(__name__)
+
+
+def run_pipeline(
+
+    file_path: str,
+
+    target_column: str | None = None
+
+):
+
+    """
+    Sentinel AI Analysis Pipeline.
+
+    Responsible for:
+
+    - loading dataframe
+    - executing analyzers
+    - aggregating report
+    - graceful failure handling
+    """
+
+    report = {}
+
+    failed_analyzers = []
+
+
+    # Load Dataset
+
+    try:
+
+        df = load_dataframe(file_path)
+
+    except Exception as e:
+
+        logger.exception(
+
+            "Dataset loading failed"
+
+        )
+
+        raise RuntimeError(str(e))
+
+
+    analyzers = [
+
+        # Will add analyzers here soon
+
+    ]
+
+
+    # Execute analyzers
+
+    for analyzer in analyzers:
+
+        try:
+
+            result = analyzer.run(
+
+                df,
+
+                target_column
+
+            )
+
+            report[analyzer.name] = result
+
+        except Exception:
+
+            logger.exception(
+
+                f"{analyzer.name} failed"
+
+            )
+
+            failed_analyzers.append(
+
+                analyzer.name
+
+            )
+
+
+    report["failed_analyzers"] = failed_analyzers
+
+
+    # Temporary score
+
+    score = 100
+
+
+    return report, score

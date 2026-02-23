@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from ..analysis_engine.pipeline import run_analysis
 from ..db.models import Dataset, Report
 from ..db.session import SessionLocal
-
+from app.analysis_engine.pipeline import run_pipeline
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +21,7 @@ def process_dataset(dataset_id: str) -> None:
         dataset.status = "processing"
         db.commit()
 
-        report_json, score = run_analysis(dataset.file_path)
+        report_json, score = run_pipeline(dataset.file_path)
 
         report = Report(
             dataset_id=dataset.id,
