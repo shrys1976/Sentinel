@@ -5,6 +5,8 @@ from app.analysis_engine.analyzers.basic_stats import BasicStatsAnalyzer
 from app.analysis_engine.analyzers.missing import MissingAnalyzer
 from app.analysis_engine.analyzers.imbalance import ImbalanceAnalyzer
 from app.analysis_engine.analyzers.leakage import LeakageAnalyzer
+from app.analysis_engine.analyzers.outliers import OutlierAnalyzer
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,6 +59,7 @@ def run_pipeline(
         MissingAnalyzer(),
         ImbalanceAnalyzer(),    
         LeakageAnalyzer(),    
+        OutlierAnalyzer(),
 
     ]
 
