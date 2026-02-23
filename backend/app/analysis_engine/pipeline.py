@@ -1,6 +1,7 @@
 import logging
 
 from app.analysis_engine.data_loader import load_dataframe
+from app.analysis_engine.analyzers.basic_stats import BasicStatsAnalyzer
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,8 @@ def run_pipeline(
 
     analyzers = [
 
-        # Will add analyzers here soon
+        
+        BasicStatsAnalyzer
 
     ]
 
