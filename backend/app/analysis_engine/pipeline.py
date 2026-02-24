@@ -9,6 +9,7 @@ from app.analysis_engine.analyzers.leakage import LeakageAnalyzer
 from app.analysis_engine.analyzers.outliers import OutlierAnalyzer
 from app.analysis_engine.analyzers.categorical import CategoricalAnalyzer
 from app.analysis_engine.scoring import compute_score
+from app.analysis_engine.summary import build_summary
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,6 @@ logger = logging.getLogger(__name__)
 def run_pipeline(
 
     file_path: str,
-
     target_column: str | None = None
 
 ):
@@ -106,7 +106,7 @@ def run_pipeline(
     # Temporary score
     score, summary = compute_score(report)
 
-    report["summary"] = summary
+    report["summary"] = build_summary(report,score,summary)
 
 
   

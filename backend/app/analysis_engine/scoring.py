@@ -1,34 +1,22 @@
 SCORING_RULES = {
 
     "fully_null_column": 10,
-
     "high_missing_column": 2,
-
     "imbalance": 15,
-
     "leakage": 40,
-
     "outliers": 10,
-
     "high_cardinality": 10,
-
     "duplicate_rows": 10,
-
 }
 
 def compute_score(report: dict):
 
     score = 100
-
     critical_issues = []
-
     warnings = []
-
-
     # ---------- BASIC STATS ----------
 
     basic = report.get("basic_stats", {})
-
 
     duplicate_ratio = basic.get(
 
@@ -105,14 +93,12 @@ def compute_score(report: dict):
 
 
         critical_issues.append(
-
             "Fully null columns detected"
 
         )
 
 
     high_missing = missing.get(
-
         "high_missing_columns",
 
         []
@@ -123,7 +109,6 @@ def compute_score(report: dict):
     score -= (
 
         SCORING_RULES["high_missing_column"]
-
         * len(high_missing)
 
     )
@@ -132,7 +117,6 @@ def compute_score(report: dict):
     if high_missing:
 
         warnings.append(
-
             "High missing columns detected"
 
         )
@@ -141,24 +125,18 @@ def compute_score(report: dict):
     # ---------- IMBALANCE ----------
 
     imbalance = report.get(
-
         "imbalance",
 
         {}
-
     )
 
-
     if imbalance.get(
-
         "imbalance_detected"
 
     ):
 
         score -= SCORING_RULES["imbalance"]
-
         warnings.append(
-
             "Severe class imbalance"
 
         )
@@ -169,22 +147,18 @@ def compute_score(report: dict):
     leakage = report.get(
 
         "leakage",
-
         {}
 
     )
 
 
     if leakage.get(
-
         "leakage_detected"
 
     ):
 
         score -= SCORING_RULES["leakage"]
-
         critical_issues.append(
-
             "Potential feature leakage"
 
         )
@@ -193,18 +167,14 @@ def compute_score(report: dict):
     # ---------- OUTLIERS ----------
 
     outliers = report.get(
-
         "outliers",
-
         {}
 
     )
 
 
     high_outlier_columns = outliers.get(
-
         "high_outlier_columns",
-
         []
 
     )
@@ -213,9 +183,7 @@ def compute_score(report: dict):
     if high_outlier_columns:
 
         score -= SCORING_RULES["outliers"]
-
         warnings.append(
-
             "High outlier presence"
 
         )
@@ -224,18 +192,14 @@ def compute_score(report: dict):
     # ---------- CATEGORICAL ----------
 
     categorical = report.get(
-
         "categorical",
-
         {}
 
     )
 
 
     high_cardinality = categorical.get(
-
         "high_cardinality_columns",
-
         []
 
     )
@@ -244,9 +208,7 @@ def compute_score(report: dict):
     if high_cardinality:
 
         score -= SCORING_RULES["high_cardinality"]
-
         warnings.append(
-
             "High cardinality categorical columns"
 
         )
@@ -254,18 +216,12 @@ def compute_score(report: dict):
 
     score = max(score, 0)
 
-
     summary = {
-
         "critical_issues":
-
             critical_issues,
-
         "warnings":
-
             warnings,
 
     }
-
 
     return score, summary
