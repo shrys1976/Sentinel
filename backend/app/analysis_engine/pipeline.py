@@ -1,5 +1,6 @@
 import logging
 
+from app.analysis_engine.scoring import compute_score
 from app.analysis_engine.data_loader import load_dataframe
 from app.analysis_engine.analyzers.basic_stats import BasicStatsAnalyzer
 from app.analysis_engine.analyzers.missing import MissingAnalyzer
@@ -7,6 +8,9 @@ from app.analysis_engine.analyzers.imbalance import ImbalanceAnalyzer
 from app.analysis_engine.analyzers.leakage import LeakageAnalyzer
 from app.analysis_engine.analyzers.outliers import OutlierAnalyzer
 from app.analysis_engine.analyzers.categorical import CategoricalAnalyzer
+from app.analysis_engine.scoring import compute_score
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -100,8 +104,12 @@ def run_pipeline(
 
 
     # Temporary score
+    score, summary = compute_score(report)
 
-    score = 100
+    report["summary"] = summary
+
+
+  
 
 
     return report, score
