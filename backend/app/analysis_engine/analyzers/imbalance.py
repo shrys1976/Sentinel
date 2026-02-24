@@ -10,7 +10,12 @@ logger = logging.getLogger(__name__)
 class ImbalanceAnalyzer(BaseAnalyzer):
     name = "imbalance"
 
-    def run(self, df: pd.DataFrame, target_column: str | None = None) -> dict:
+    def run(
+        self,
+        df: pd.DataFrame,
+        profile: dict,
+        target_column: str | None = None,
+    ) -> dict:
         logger.info("Running imbalance analyzer")
 
         if df.empty:

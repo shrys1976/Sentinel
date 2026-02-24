@@ -10,6 +10,7 @@ class BaseAnalyzer(ABC):
 
         self,
         df: pd.DataFrame,
+        profile: dict,
         target_column: str | None = None
     ) -> dict:
 

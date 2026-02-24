@@ -6,8 +6,14 @@ from .base import BaseAnalyzer
 class BasicStatsAnalyzer(BaseAnalyzer):
     name = "basic_stats"
 
-    def run(self, df: pd.DataFrame, target_column: str | None = None) -> dict:
-        rows, columns = df.shape
+    def run(
+        self,
+        df: pd.DataFrame,
+        profile: dict,
+        target_column: str | None = None,
+    ) -> dict:
+        rows = profile["rows"]
+        columns = profile["columns"]
         numeric_cols = df.select_dtypes(include="number").columns.to_list()
         categorical_cols = df.select_dtypes(exclude="number").columns.to_list()
 

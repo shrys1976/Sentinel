@@ -10,7 +10,7 @@ from app.analysis_engine.analyzers.outliers import OutlierAnalyzer
 from app.analysis_engine.analyzers.categorical import CategoricalAnalyzer
 from app.analysis_engine.scoring import compute_score
 from app.analysis_engine.summary import build_summary
-
+from app.analysis_engine.profile import build_dataset_profile
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,7 @@ def run_pipeline(
     try:
 
         df = load_dataframe(file_path)
+        profile = build_dataset_profile(df)
 
     except Exception as e:
 
@@ -78,7 +79,7 @@ def run_pipeline(
             result = analyzer.run(
 
                 df,
-
+                profile,
                 target_column
 
             )

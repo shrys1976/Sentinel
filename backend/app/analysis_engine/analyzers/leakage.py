@@ -11,7 +11,12 @@ class LeakageAnalyzer(BaseAnalyzer):
     name = "leakage"
     CORRELATION_THRESHOLD = 0.9
 
-    def run(self, df: pd.DataFrame, target_column: str | None = None) -> dict:
+    def run(
+        self,
+        df: pd.DataFrame,
+        profile: dict,
+        target_column: str | None = None,
+    ) -> dict:
         logger.info("Running leakage analyzer")
 
         if df.empty:
