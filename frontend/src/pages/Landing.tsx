@@ -36,9 +36,9 @@ export default function Landing() {
     <>
       <section
         id="top"
-        className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_50%_-12%,#0c163a_0,#050710_42%,#020202_78%)]"
+        className="relative min-h-screen overflow-hidden bg-black"
       >
-        <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_15%_60%,rgba(93,110,255,0.18),transparent_46%),radial-gradient(circle_at_88%_58%,rgba(93,110,255,0.2),transparent_46%),linear-gradient(180deg,transparent_65%,rgba(5,7,14,0.95)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,1)_100%)]" />
         <div className="pointer-events-none absolute inset-0 z-10 opacity-95 [filter:drop-shadow(0_0_10px_rgba(220,232,255,0.3))]">
           <StarsCanvas
             className="inset-0"
