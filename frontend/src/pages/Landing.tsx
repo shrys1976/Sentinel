@@ -2,7 +2,12 @@ import { type ChangeEvent, type DragEvent, useState } from "react";
 import { FallingPattern } from "@/components/ui/falling-pattern";
 import { StarsCanvas } from "@/components/ui/stars-canvas";
 
-export default function Landing() {
+type LandingProps = {
+  onUploadFile: (file: File) => void;
+  onNavigateUpload: () => void;
+};
+
+export default function Landing({ onUploadFile, onNavigateUpload }: LandingProps) {
   const [uploadStatus, setUploadStatus] = useState("No file selected");
   const [isDragging, setIsDragging] = useState(false);
 
@@ -18,6 +23,7 @@ export default function Landing() {
     }
 
     setUploadStatus(`Ready: ${file.name}`);
+    onUploadFile(file);
   };
 
   const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -220,6 +226,7 @@ export default function Landing() {
           </h2>
           <button
             type="button"
+            onClick={onNavigateUpload}
             className="mt-8 rounded-xl bg-slate-200 px-7 py-3 text-sm font-extrabold uppercase tracking-[0.08em] text-slate-800 transition hover:bg-white"
           >
             Analyze Dataset

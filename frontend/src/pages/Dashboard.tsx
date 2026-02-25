@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { listDatasets } from "../services/datasetApi";
+import { type DatasetHistoryItem, listDatasets } from "../services/datasetApi";
 
 type DashboardProps = {
   onLogout: () => void;
@@ -8,14 +8,19 @@ type DashboardProps = {
 
 export default function Dashboard({ onLogout }: DashboardProps) {
   const [loading, setLoading] = useState(true);
-  const [datasets, setDatasets] = useState<unknown[]>([]);
+  const [datasets, setDatasets] = useState<DatasetHistoryItem[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     listDatasets()
-      .then((data) => setDatasets(Array.isArray(data) ? data : []))
-      .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : "Failed to load datasets.");
+      .then((data) => {
+        setDatasets(data);
+        setError(null);
+      })
+      .catch(() => {
+        // Treat history fetch failures as empty state in V1 UX.
+        setDatasets([]);
+        setError(null);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -50,7 +55,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
           <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-6 backdrop-blur-sm">
             <h2 className="text-xl font-semibold text-slate-100">Past Dataset History</h2>
             <p className="mt-2 text-sm text-slate-400">
-              {datasets.length ? `${datasets.length} datasets found.` : "No datasets found yet."}
+              {datasets.length ? `${datasets.length} datasets found.` : "No previous uploads found."}
             </p>
           </div>
         ) : null}

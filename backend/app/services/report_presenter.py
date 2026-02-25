@@ -8,6 +8,8 @@ def build_report_view(report_json: dict, score: int, dataset) -> dict:
             "name": dataset.name,
             "rows": dataset.rows,
             "columns": dataset.columns,
+            "created_at": str(dataset.created_at) if getattr(dataset, "created_at", None) else None,
+            "status": getattr(dataset, "status", None),
         },
         "sentinel_score": score,
         "top_issues": summary.get("top_issues", []),

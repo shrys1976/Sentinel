@@ -1,20 +1,38 @@
 import { useEffect, useRef, useState } from "react";
-import Dashboard from "./pages/Dashboard";
+
+import Analyses from "./pages/Analyses";
+import Analysis from "./pages/Analysis";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import Report from "./pages/Report";
+import Upload from "./pages/Upload";
 import { useAuth } from "./hooks/useAuth";
+import { supabase } from "./lib/supabase";
 
 function App() {
   const [isNavVisible, setIsNavVisible] = useState(true);
   const [path, setPath] = useState(window.location.pathname);
+  const [pendingUploadFile, setPendingUploadFile] = useState<File | null>(null);
   const lastScrollY = useRef(0);
   const { isAuthenticated, loading } = useAuth();
+
+  const analysisMatch = path.match(/^\/analysis\/([^/]+)$/);
+  const reportMatch = path.match(/^\/report\/([^/]+)$/);
+  const analysisDatasetId = analysisMatch ? decodeURIComponent(analysisMatch[1]) : null;
+  const reportDatasetId = reportMatch ? decodeURIComponent(reportMatch[1]) : null;
 
   const navigate = (to: string) => {
     if (window.location.pathname === to) return;
     window.history.pushState({}, "", to);
     setPath(to);
     window.scrollTo({ top: 0, behavior: "auto" });
+  };
+
+  const logout = async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    navigate("/login");
   };
 
   useEffect(() => {
@@ -48,14 +66,21 @@ function App() {
   }, [path]);
 
   useEffect(() => {
-    if (path === "/dashboard" && !loading && !isAuthenticated) {
+    const protectedPaths = ["/analyses", "/dashboard"];
+    if (protectedPaths.includes(path) && !loading && !isAuthenticated) {
       navigate("/login");
     }
   }, [path, loading, isAuthenticated]);
 
   useEffect(() => {
+    if ((reportDatasetId || analysisDatasetId) && !loading && !isAuthenticated) {
+      navigate("/login");
+    }
+  }, [reportDatasetId, analysisDatasetId, loading, isAuthenticated]);
+
+  useEffect(() => {
     if (path === "/login" && !loading && isAuthenticated) {
-      navigate("/dashboard");
+      navigate("/analyses");
     }
   }, [path, loading, isAuthenticated]);
 
@@ -73,49 +98,110 @@ function App() {
               e.preventDefault();
               navigate("/");
             }}
-            className="text-xl font-extrabold tracking-tight text-slate-100"
+            className="instrument-serif-regular text-2xl tracking-tight text-slate-100"
           >
             Sentinel
           </a>
+
           <nav className="flex items-center gap-8">
+            {isAuthenticated ? (
+              <button type="button" onClick={logout} className="transition hover:text-white">
+                LOGOUT
+              </button>
+            ) : (
+              <a
+                href="/login"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/login");
+                }}
+                className="transition hover:text-white"
+              >
+                LOGIN
+              </a>
+            )}
+
             <a
-              href="/login"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/login");
-              }}
-              className="transition hover:text-white"
-            >
-              Login
-            </a>
-            <a
-              href="/dashboard"
+              href="/analyses"
               onClick={(e) => {
                 e.preventDefault();
                 if (!isAuthenticated) {
                   navigate("/login");
                   return;
                 }
-                navigate("/dashboard");
+                navigate("/analyses");
               }}
-              className="transition hover:text-white"
+              className="normal-case transition hover:text-white"
             >
-              Dashboard
+              ANALYSES
             </a>
           </nav>
         </div>
       </header>
 
       <main>
-        {path === "/" ? <Landing /> : null}
-        {path === "/login" ? <Login onSuccess={() => navigate("/dashboard")} /> : null}
-        {path === "/dashboard" ? (
+        {path === "/" ? (
+          <Landing
+            onUploadFile={(file) => {
+              setPendingUploadFile(file);
+              navigate("/upload");
+            }}
+            onNavigateUpload={() => navigate("/upload")}
+          />
+        ) : null}
+
+        {path === "/upload" ? (
+          <Upload
+            initialFile={pendingUploadFile}
+            isAuthenticated={isAuthenticated}
+            onNavigateLogin={() => navigate("/login")}
+            onUploaded={(datasetId) => {
+              setPendingUploadFile(null);
+              navigate(`/analysis/${datasetId}`);
+            }}
+          />
+        ) : null}
+
+        {path === "/login" ? <Login onSuccess={() => navigate("/analyses")} /> : null}
+
+        {path === "/analyses" ? (
           loading ? (
             <div className="flex min-h-screen items-center justify-center bg-black text-slate-300">
               Checking session...
             </div>
           ) : isAuthenticated ? (
-            <Dashboard onLogout={() => navigate("/login")} />
+            <Analyses
+              onOpenAnalysis={(datasetId) => navigate(`/analysis/${datasetId}`)}
+              onViewReport={(datasetId) => navigate(`/report/${datasetId}`)}
+            />
+          ) : null
+        ) : null}
+
+        {analysisDatasetId ? (
+          loading ? (
+            <div className="flex min-h-screen items-center justify-center bg-black text-slate-300">
+              Checking session...
+            </div>
+          ) : isAuthenticated ? (
+            <Analysis
+              datasetId={analysisDatasetId}
+              onGoAnalyses={() => navigate("/analyses")}
+              onViewReport={(datasetId) => navigate(`/report/${datasetId}`)}
+            />
+          ) : null
+        ) : null}
+
+        {reportDatasetId ? (
+          loading ? (
+            <div className="flex min-h-screen items-center justify-center bg-black text-slate-300">
+              Checking session...
+            </div>
+          ) : isAuthenticated ? (
+            <Report
+              datasetId={reportDatasetId}
+              onBackToDashboard={() => navigate("/analyses")}
+              onDeleted={() => navigate("/analyses")}
+            />
           ) : null
         ) : null}
       </main>
