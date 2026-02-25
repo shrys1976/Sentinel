@@ -21,6 +21,10 @@ export default function Dashboard({ onLogout }: DashboardProps) {
   }, []);
 
   const logout = async () => {
+    if (!supabase) {
+      onLogout();
+      return;
+    }
     await supabase.auth.signOut();
     onLogout();
   };

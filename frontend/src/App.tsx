@@ -79,17 +79,6 @@ function App() {
           </a>
           <nav className="flex items-center gap-8">
             <a
-              href="/#features"
-              onClick={(e) => {
-                if (path !== "/") return;
-                e.preventDefault();
-                document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="transition hover:text-white"
-            >
-              Core Features
-            </a>
-            <a
               href="/login"
               onClick={(e) => {
                 e.preventDefault();

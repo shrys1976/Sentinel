@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { isSupabaseConfigured, supabase } from "../lib/supabase";
 
 type LoginProps = {
   onSuccess: () => void;
@@ -8,6 +8,7 @@ type LoginProps = {
 export default function Login({ onSuccess }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -21,6 +22,11 @@ export default function Login({ onSuccess }: LoginProps) {
     event.preventDefault();
     setError(null);
     setInfo(null);
+
+    if (!isSupabaseConfigured || !supabase) {
+      setError("Auth is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");
+      return;
+    }
 
     if (!email.trim() || !password.trim()) {
       setError("Email and password are required.");
@@ -74,9 +80,11 @@ export default function Login({ onSuccess }: LoginProps) {
     <div className="flex min-h-screen items-center justify-center bg-black px-5 py-24 text-slate-100">
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-950/70 p-7 backdrop-blur-sm">
         <h1 className="instrument-serif-regular text-4xl tracking-tight">Login</h1>
-        <p className="mt-2 text-sm text-slate-400">
-          New email automatically creates an account. Existing email signs in.
-        </p>
+        {!isSupabaseConfigured ? (
+          <p className="mt-3 rounded-lg border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+            Missing Supabase env vars. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.
+          </p>
+        ) : null}
 
         <form onSubmit={submit} className="mt-6 space-y-4">
           <label className="block text-sm">
@@ -93,14 +101,24 @@ export default function Login({ onSuccess }: LoginProps) {
 
           <label className="block text-sm">
             <span className="mb-1 block text-slate-300">Password</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-black/60 px-3 py-2 text-slate-100 outline-none transition focus:border-white/40"
-              placeholder="••••••••"
-              autoComplete="current-password"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-xl border border-white/15 bg-black/60 px-3 py-2 pr-10 text-slate-100 outline-none transition focus:border-white/40"
+                placeholder="••••••••"
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 transition hover:text-slate-200"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "🙈" : "👁"}
+              </button>
+            </div>
           </label>
 
           {error ? <p className="text-sm text-rose-300">{error}</p> : null}
