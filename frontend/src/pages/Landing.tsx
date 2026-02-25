@@ -43,7 +43,7 @@ export default function Landing() {
           <StarsCanvas
             className="inset-0"
             transparent
-            maxStars={760}
+            maxStars={520}
             hue={214}
             brightness={0.72}
             speedMultiplier={0.9}

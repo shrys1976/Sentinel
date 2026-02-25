@@ -114,18 +114,18 @@ export function StarsCanvas({
           const twinkle =
             0.82 + 0.18 * Math.sin(pulse * twinkleIntensity + s.twinkleOffset);
           const intensity = Math.max(0.08, s.alpha * twinkle);
-          const size = Math.max(0.45, perspective * 3.2);
+          const size = Math.max(0.3, perspective * 2.45);
 
           const core = `hsla(${hue}, 92%, 88%, ${Math.min(1, intensity)})`;
           const glow = `hsla(${hue}, 100%, 68%, ${Math.min(0.85, intensity * 0.48)})`;
 
           // Glow ring
-          const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, size * 3.2);
+          const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, size * 2.6);
           g.addColorStop(0, glow);
           g.addColorStop(1, 'transparent');
           ctx.fillStyle = g;
           ctx.beginPath();
-          ctx.arc(sx, sy, size * 3.2, 0, Math.PI * 2);
+          ctx.arc(sx, sy, size * 2.6, 0, Math.PI * 2);
           ctx.fill();
 
           // Crisp star core
