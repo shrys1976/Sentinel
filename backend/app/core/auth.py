@@ -26,5 +26,9 @@ def get_current_user(
     if not credentials:
         return None
     token = credentials.credentials
-    payload = verify_supabase_token(token)
-    return payload.get("sub")
+    try:
+        payload = verify_supabase_token(token)
+        return payload.get("sub")
+    except HTTPException:
+        # Invalid/expired token falls back to guest context for session-based access.
+        return None

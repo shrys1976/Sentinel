@@ -234,7 +234,7 @@ export default function Landing({ onUploadFile, onNavigateUpload }: LandingProps
         </div>
         <footer className="relative z-20 mt-20 pt-6">
           <div className="mx-auto flex w-[min(1120px,calc(100vw-56px))] flex-col gap-4 text-sm text-slate-200/85 md:flex-row md:items-center md:justify-between">
-            <span className="text-base font-extrabold text-slate-100">Sentinel</span>
+            <span className="instrument-serif-regular text-2xl text-slate-100">Sentinel</span>
             <div className="flex flex-wrap items-center gap-5">
               <a href="#" className="transition hover:text-white">
                 Docs

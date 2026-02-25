@@ -73,12 +73,6 @@ function App() {
   }, [path, loading, isAuthenticated]);
 
   useEffect(() => {
-    if ((reportDatasetId || analysisDatasetId) && !loading && !isAuthenticated) {
-      navigate("/login");
-    }
-  }, [reportDatasetId, analysisDatasetId, loading, isAuthenticated]);
-
-  useEffect(() => {
     if (path === "/login" && !loading && isAuthenticated) {
       navigate("/analyses");
     }
@@ -153,8 +147,6 @@ function App() {
         {path === "/upload" ? (
           <Upload
             initialFile={pendingUploadFile}
-            isAuthenticated={isAuthenticated}
-            onNavigateLogin={() => navigate("/login")}
             onUploaded={(datasetId) => {
               setPendingUploadFile(null);
               navigate(`/analysis/${datasetId}`);
@@ -178,31 +170,19 @@ function App() {
         ) : null}
 
         {analysisDatasetId ? (
-          loading ? (
-            <div className="flex min-h-screen items-center justify-center bg-black text-slate-300">
-              Checking session...
-            </div>
-          ) : isAuthenticated ? (
-            <Analysis
-              datasetId={analysisDatasetId}
-              onGoAnalyses={() => navigate("/analyses")}
-              onViewReport={(datasetId) => navigate(`/report/${datasetId}`)}
-            />
-          ) : null
+          <Analysis
+            datasetId={analysisDatasetId}
+            onGoAnalyses={() => navigate("/analyses")}
+            onViewReport={(datasetId) => navigate(`/report/${datasetId}`)}
+          />
         ) : null}
 
         {reportDatasetId ? (
-          loading ? (
-            <div className="flex min-h-screen items-center justify-center bg-black text-slate-300">
-              Checking session...
-            </div>
-          ) : isAuthenticated ? (
-            <Report
-              datasetId={reportDatasetId}
-              onBackToDashboard={() => navigate("/analyses")}
-              onDeleted={() => navigate("/analyses")}
-            />
-          ) : null
+          <Report
+            datasetId={reportDatasetId}
+            onBackToDashboard={() => navigate(isAuthenticated ? "/analyses" : "/upload")}
+            onDeleted={() => navigate(isAuthenticated ? "/analyses" : "/upload")}
+          />
         ) : null}
       </main>
     </div>

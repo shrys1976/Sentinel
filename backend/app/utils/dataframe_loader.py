@@ -1,7 +1,7 @@
 import pandas as pd
 from fastapi import HTTPException
 
-def extract_dataset_metadata(path:str):
+def extract_dataset_metadata(path: str):
 
     try:
 
@@ -9,7 +9,8 @@ def extract_dataset_metadata(path:str):
 
             path,
             nrows=5000,
-            low_memory=True
+            low_memory=True,
+            encoding_errors="replace",
 
         )
 
@@ -22,8 +23,11 @@ def extract_dataset_metadata(path:str):
         )
 
 
-    rows = sum(1 for _ in open(path)) - 1
+    # Count newline bytes to avoid platform text-decoding errors (e.g., cp1252 on Windows).
+    with open(path, "rb") as f:
+        rows = f.read().count(b"\n") - 1
+    if rows < 0:
+        rows = 0
     columns = len(df.columns)
     return rows, columns
-
 
