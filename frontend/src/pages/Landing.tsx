@@ -1,6 +1,6 @@
 import { type ChangeEvent, type DragEvent, useState } from "react";
-import { DottedSurface } from "@/components/ui/dotted-surface";
 import { FallingPattern } from "@/components/ui/falling-pattern";
+import { StarsCanvas } from "@/components/ui/stars-canvas";
 
 export default function Landing() {
   const [uploadStatus, setUploadStatus] = useState("No file selected");
@@ -39,10 +39,15 @@ export default function Landing() {
         className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_50%_-12%,#0c163a_0,#050710_42%,#020202_78%)]"
       >
         <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_15%_60%,rgba(93,110,255,0.18),transparent_46%),radial-gradient(circle_at_88%_58%,rgba(93,110,255,0.2),transparent_46%),linear-gradient(180deg,transparent_65%,rgba(5,7,14,0.95)_100%)]" />
-        <div className="pointer-events-none absolute inset-0 z-10 opacity-95 [filter:drop-shadow(0_0_12px_rgba(205,225,255,0.34))]">
-          <DottedSurface
-            className="h-full w-full"
-            pointColor="#f5f8ff"
+        <div className="pointer-events-none absolute inset-0 z-10 opacity-95 [filter:drop-shadow(0_0_10px_rgba(220,232,255,0.3))]">
+          <StarsCanvas
+            className="inset-0"
+            transparent
+            maxStars={760}
+            hue={214}
+            brightness={0.72}
+            speedMultiplier={0.9}
+            twinkleIntensity={8}
           />
         </div>
 
