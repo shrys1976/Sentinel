@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api.routes.dataset_routes import router as dataset_router
 from .api.routes.report_routes import router as report_router
+from .core.config import settings
 from .core.middleware import RequestLoggingMiddleware
 from .core.logging import setup_logging
 from .db.models import Base
@@ -15,15 +16,16 @@ app = FastAPI(title="SentinelAI API")
 
 app.add_middleware(RequestLoggingMiddleware)
 
+cors_allow_origins = [
+    origin.strip()
+    for origin in settings.CORS_ALLOW_ORIGINS.split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
+    allow_origins=cors_allow_origins,
+    allow_origin_regex=settings.CORS_ALLOW_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
