@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react";
 
 import Analyses from "./pages/Analyses";
 import Analysis from "./pages/Analysis";
+import Contact from "./pages/Contact";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import Privacy from "./pages/Privacy";
 import Report from "./pages/Report";
 import Upload from "./pages/Upload";
 import { useAuth } from "./hooks/useAuth";
@@ -141,6 +143,8 @@ function App() {
               navigate("/upload");
             }}
             onNavigateUpload={() => navigate("/upload")}
+            onNavigatePrivacy={() => navigate("/privacy")}
+            onNavigateContact={() => navigate("/contact")}
           />
         ) : null}
 
@@ -155,6 +159,8 @@ function App() {
         ) : null}
 
         {path === "/login" ? <Login onSuccess={() => navigate("/analyses")} /> : null}
+        {path === "/privacy" ? <Privacy /> : null}
+        {path === "/contact" ? <Contact /> : null}
 
         {path === "/analyses" ? (
           loading ? (

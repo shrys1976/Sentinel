@@ -5,9 +5,16 @@ import { StarsCanvas } from "@/components/ui/stars-canvas";
 type LandingProps = {
   onUploadFile: (file: File) => void;
   onNavigateUpload: () => void;
+  onNavigatePrivacy: () => void;
+  onNavigateContact: () => void;
 };
 
-export default function Landing({ onUploadFile, onNavigateUpload }: LandingProps) {
+export default function Landing({
+  onUploadFile,
+  onNavigateUpload,
+  onNavigatePrivacy,
+  onNavigateContact,
+}: LandingProps) {
   const [uploadStatus, setUploadStatus] = useState("No file selected");
   const [isDragging, setIsDragging] = useState(false);
 
@@ -236,16 +243,32 @@ export default function Landing({ onUploadFile, onNavigateUpload }: LandingProps
           <div className="mx-auto flex w-[min(1120px,calc(100vw-56px))] flex-col gap-4 text-sm text-slate-200/85 md:flex-row md:items-center md:justify-between">
             <span className="instrument-serif-regular text-2xl text-slate-100">Sentinel</span>
             <div className="flex flex-wrap items-center gap-5">
-              <a href="#" className="transition hover:text-white">
-                Docs
-              </a>
-              <a href="#" className="transition hover:text-white">
+              <a
+                href="https://github.com/shrys1976/Sentinel"
+                target="_blank"
+                rel="noreferrer"
+                className="transition hover:text-white"
+              >
                 Github
               </a>
-              <a href="#" className="transition hover:text-white">
+              <a
+                href="/privacy"
+                onClick={(event) => {
+                  event.preventDefault();
+                  onNavigatePrivacy();
+                }}
+                className="transition hover:text-white"
+              >
                 Privacy
               </a>
-              <a href="#" className="transition hover:text-white">
+              <a
+                href="/contact"
+                onClick={(event) => {
+                  event.preventDefault();
+                  onNavigateContact();
+                }}
+                className="transition hover:text-white"
+              >
                 Contact
               </a>
             </div>
