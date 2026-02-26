@@ -114,7 +114,7 @@ export default function Upload({ initialFile, onUploaded }: UploadProps) {
             onClick={submit}
             className="w-full rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting ? "Uploading..." : "Upload Dataset"}
+            {submitting ? "Processing" : "Process"}
           </button>
         </div>
       </div>

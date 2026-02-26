@@ -1,10 +1,10 @@
-import pandas as pd
+from app.utils.csv_ingestion import load_tolerant_csv
 
 def load_dataframe(file_path: str):
 
     try :
-        df = pd.read_csv( file_path, low_memory=True)
-        return df
+        df, warnings = load_tolerant_csv(file_path)
+        return df, warnings
 
     except Exception as e:
 

@@ -16,6 +16,7 @@ def build_report_view(report_json: dict, score: int, dataset) -> dict:
         "warnings": summary.get("warnings", []),
         "failed_analyzers": summary.get("failed_analyzers", []),
         "sections": {
+            "ingestion": payload.get("ingestion", {}),
             "basic_stats": payload.get("basic_stats", {}),
             "missing": payload.get("missing", {}),
             "imbalance": payload.get("imbalance", {}),

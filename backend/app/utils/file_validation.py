@@ -1,5 +1,4 @@
 from pathlib import Path
-import csv
 
 from fastapi import HTTPException, UploadFile
 
@@ -23,10 +22,8 @@ def validate_file_size(file: UploadFile) -> None:
 
 
 def validate_csv_structure(file: UploadFile) -> None:
-    try:
-        sample = file.file.read(4096)
-        file.file.seek(0)
-        decoded = sample.decode("utf-8")
-        csv.Sniffer().sniff(decoded)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid CSV format")
+    sample = file.file.read(4096)
+    file.file.seek(0)
+
+    if not sample:
+        raise HTTPException(status_code=400, detail="CSV is empty")

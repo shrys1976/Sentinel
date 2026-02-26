@@ -43,7 +43,7 @@ def run_pipeline(
 
     try:
 
-        df = load_dataframe(file_path)
+        df, ingestion_warnings = load_dataframe(file_path)
         profile = build_dataset_profile(df)
 
     except Exception as e:
@@ -102,6 +102,9 @@ def run_pipeline(
 
 
     report["failed_analyzers"] = failed_analyzers
+    report["ingestion"] = {
+        "warnings": ingestion_warnings,
+    }
 
 
     # Temporary score

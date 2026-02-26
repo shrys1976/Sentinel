@@ -1,18 +1,10 @@
-import pandas as pd
 from fastapi import HTTPException
+from .csv_ingestion import load_tolerant_csv
 
 def extract_dataset_metadata(path: str):
 
     try:
-
-        df = pd.read_csv(
-
-            path,
-            nrows=5000,
-            low_memory=True,
-            encoding_errors="replace",
-
-        )
+        df, _ = load_tolerant_csv(path, nrows=5000)
 
     except Exception:
 
@@ -30,4 +22,3 @@ def extract_dataset_metadata(path: str):
         rows = 0
     columns = len(df.columns)
     return rows, columns
-
