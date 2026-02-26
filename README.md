@@ -149,4 +149,4 @@ Set env vars in Render:
 
 - Local development may use SQLite by default.
 - Production should use managed Postgres (Neon recommended).
-- If DB credentials are exposed publicly, rotate immediately.
+
