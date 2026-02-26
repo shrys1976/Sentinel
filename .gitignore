@@ -28,3 +28,5 @@ plan.md
 
 frontend/.env.local
 todo
+.vercel
+.env*.local
