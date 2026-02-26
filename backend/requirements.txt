@@ -8,6 +8,9 @@ h11==0.16.0
 idna==3.11
 psycopg2-binary==2.9.11
 pandas==2.2.3
+scipy==1.13.1
+scikit-learn==1.5.2
+matplotlib==3.9.2
 pydantic==2.12.5
 pydantic-settings==2.13.1
 pydantic_core==2.41.5

@@ -23,8 +23,9 @@ export default function ReportHeader({ dataset, onBack, onDelete, deleting }: Re
             {dataset.name}
           </h1>
           <div className="mt-3 flex flex-wrap gap-4 text-sm text-slate-300">
-            <span>Rows: {dataset.rows}</span>
-            <span>Columns: {dataset.columns}</span>
+            <span>Rows: {dataset.rows ?? "-"}</span>
+            <span>Columns: {dataset.columns ?? "-"}</span>
+            <span>Target: {dataset.target_column ?? "-"}</span>
             <span>Status: {dataset.status ?? "-"}</span>
             <span>Created: {formatDate(dataset.created_at)}</span>
           </div>

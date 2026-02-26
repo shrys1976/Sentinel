@@ -4,36 +4,34 @@ import { cn } from '@/lib/utils';
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-type DottedSurfaceProps = Omit<React.ComponentProps<'div'>, 'ref'> & {
-  pointColor?: string;
-};
+type DottedSurfaceProps = Omit<React.ComponentProps<'div'>, 'ref'>;
 
-export function DottedSurface({ className, pointColor = '#dbe7ff', ...props }: DottedSurfaceProps) {
+export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const SEPARATION = 132;
+    const SEPARATION = 150;
     const AMOUNTX = 40;
-    const AMOUNTY = 56;
+    const AMOUNTY = 60;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x050d29, 2400, 9800);
+    scene.fog = new THREE.Fog(0xffffff, 2000, 10000);
 
-    const camera = new THREE.PerspectiveCamera(56, 1, 1, 10000);
-    camera.position.set(0, 320, 1220);
+    const camera = new THREE.PerspectiveCamera(60, 1, 1, 10000);
+    camera.position.set(0, 355, 1220);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
+    renderer.setClearColor(scene.fog.color, 0);
     container.appendChild(renderer.domElement);
 
     const geometry = new THREE.BufferGeometry();
     const positions: number[] = [];
-    const color = new THREE.Color(pointColor);
     const colors: number[] = [];
+    const pointColor = new THREE.Color(0xd7e2ff);
 
     for (let ix = 0; ix < AMOUNTX; ix++) {
       for (let iy = 0; iy < AMOUNTY; iy++) {
@@ -42,7 +40,7 @@ export function DottedSurface({ className, pointColor = '#dbe7ff', ...props }: D
         const z = iy * SEPARATION - (AMOUNTY * SEPARATION) / 2;
 
         positions.push(x, y, z);
-        colors.push(color.r, color.g, color.b);
+        colors.push(pointColor.r, pointColor.g, pointColor.b);
       }
     }
 
@@ -50,25 +48,15 @@ export function DottedSurface({ className, pointColor = '#dbe7ff', ...props }: D
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
     const material = new THREE.PointsMaterial({
-      size: 5.5,
+      size: 8,
       vertexColors: true,
       transparent: true,
-      opacity: 0.72,
+      opacity: 0.8,
       sizeAttenuation: true,
     });
 
     const points = new THREE.Points(geometry, material);
     scene.add(points);
-
-    // Soft parallax layer for a more premium depth effect.
-    const geometryLayer2 = geometry.clone();
-    const materialLayer2 = material.clone();
-    materialLayer2.size = 3.2;
-    materialLayer2.opacity = 0.34;
-    const pointsLayer2 = new THREE.Points(geometryLayer2, materialLayer2);
-    pointsLayer2.position.y = 22;
-    pointsLayer2.position.z = -110;
-    scene.add(pointsLayer2);
 
     let count = 0;
     let animationId = 0;
@@ -92,17 +80,15 @@ export function DottedSurface({ className, pointColor = '#dbe7ff', ...props }: D
         for (let iy = 0; iy < AMOUNTY; iy++) {
           const index = i * 3;
           positionArray[index + 1] =
-            Math.sin((ix + count) * 0.22) * 34 +
-            Math.sin((iy + count * 1.05) * 0.38) * 36;
+            Math.sin((ix + count) * 0.3) * 50 +
+            Math.sin((iy + count) * 0.5) * 50;
           i += 1;
         }
       }
 
       positionAttribute.needsUpdate = true;
-      points.rotation.y = Math.sin(count * 0.04) * 0.04;
-      pointsLayer2.rotation.y = Math.sin(count * 0.05 + 1.3) * 0.05;
       renderer.render(scene, camera);
-      count += 0.048;
+      count += 0.1;
     };
 
     const resizeObserver = new ResizeObserver(() => resize());
@@ -115,14 +101,12 @@ export function DottedSurface({ className, pointColor = '#dbe7ff', ...props }: D
       cancelAnimationFrame(animationId);
       geometry.dispose();
       material.dispose();
-      geometryLayer2.dispose();
-      materialLayer2.dispose();
       renderer.dispose();
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [pointColor]);
+  }, []);
 
   return <div ref={containerRef} className={cn('pointer-events-none absolute inset-0', className)} {...props} />;
 }

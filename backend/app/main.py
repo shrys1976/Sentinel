@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .api.routes.dataset_routes import router as dataset_router
+from .api.routes.plot_routes import router as plot_router
 from .api.routes.report_routes import router as report_router
 from .core.config import settings
 from .core.middleware import RequestLoggingMiddleware
 from .core.logging import setup_logging
 from .db.models import Base
-from .db.schema_repair import ensure_reports_table_columns
+from .db.schema_repair import ensure_datasets_table_columns, ensure_reports_table_columns
 from .db.session import engine
 
 setup_logging()
@@ -33,9 +34,11 @@ app.add_middleware(
 
 app.include_router(dataset_router)
 app.include_router(report_router)
+app.include_router(plot_router)
 
 Base.metadata.create_all(bind=engine)
 ensure_reports_table_columns(engine)
+ensure_datasets_table_columns(engine)
 
 
 @app.get("/health")

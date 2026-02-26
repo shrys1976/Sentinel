@@ -6,6 +6,7 @@ from ...db.session import get_db
 from ...schemas.report_schema import ReportResponse
 from ...schemas.report_view_schema import ReportViewResponse
 from ...services.report_presenter import build_report_view
+from ...services.plot_manager import list_plot_types
 from ...services.report_service import get_authorized_report
 
 router = APIRouter(prefix="/reports", tags=["reports"])
@@ -72,5 +73,6 @@ def fetch_report_view(
     if not report:
         raise HTTPException(status_code=404, detail="Report not found")
 
-    view = build_report_view(report.report_json, report.score, dataset)
+    available_plots = list_plot_types(db, dataset_id)
+    view = build_report_view(report.report_json, report.score, dataset, available_plots)
     return view

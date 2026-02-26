@@ -1,10 +1,10 @@
 def build_summary(
     report: dict,
     score: int,
-    scoring_summary : dict
+    scoring_summary: dict
 ):
 
- critical =  scoring_summary.get("critical_issues", [])
+ critical = scoring_summary.get("critical_issues", [])
  warnings = scoring_summary.get("warnings", [])
  ingestion = report.get("ingestion", {}) if isinstance(report.get("ingestion", {}), dict) else {}
  ingestion_warnings = ingestion.get("warnings", []) if isinstance(ingestion.get("warnings", []), list) else []

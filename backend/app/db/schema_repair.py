@@ -22,3 +22,20 @@ def ensure_reports_table_columns(engine: Engine) -> None:
         for name, ddl in required_sql.items():
             if name not in existing:
                 conn.execute(text(ddl))
+
+
+def ensure_datasets_table_columns(engine: Engine) -> None:
+    """Patch legacy SQLite datasets table missing columns without dropping data."""
+    with engine.begin() as conn:
+        inspector = inspect(conn)
+        if "datasets" not in inspector.get_table_names():
+            return
+
+        existing = {col["name"] for col in inspector.get_columns("datasets")}
+        required_sql = {
+            "target_column": "ALTER TABLE datasets ADD COLUMN target_column VARCHAR",
+        }
+
+        for name, ddl in required_sql.items():
+            if name not in existing:
+                conn.execute(text(ddl))

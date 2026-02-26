@@ -4,8 +4,9 @@ export type DatasetHistoryItem = {
   dataset_id: string;
   name: string;
   status: string;
-  rows: number;
-  columns: number;
+  rows: number | null;
+  columns: number | null;
+  target_column: string | null;
   created_at: string;
 };
 
@@ -29,6 +30,7 @@ export type DatasetStatus = {
   status: string;
   rows: number | null;
   columns: number | null;
+  target_column: string | null;
 };
 
 export type DatasetUploadResult = {
@@ -36,12 +38,16 @@ export type DatasetUploadResult = {
   rows: number;
   columns: number;
   status: string;
+  target_column: string | null;
 };
 
-export async function uploadDataset(file: File, datasetName: string) {
+export async function uploadDataset(file: File, datasetName: string, targetColumn?: string) {
   const body = new FormData();
   body.append("file", file);
   body.append("dataset_name", datasetName);
+  if (targetColumn && targetColumn.trim()) {
+    body.append("target_column", targetColumn.trim());
+  }
 
   const res = await api.request(`${api.baseUrl}/datasets/upload`, {
     method: "POST",

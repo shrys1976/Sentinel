@@ -7,6 +7,7 @@ class DatasetUploadResponse(BaseModel):
     rows: int
     columns: int
     status: str
+    target_column: str|None
 
 
 class DatasetHistoryItem(BaseModel):
@@ -16,6 +17,7 @@ class DatasetHistoryItem(BaseModel):
     status: str
     rows: int|None
     columns: int|None
+    target_column: str|None
     created_at : str
 
 
@@ -28,4 +30,5 @@ class DatasetStatusResponse(BaseModel):
     dataset_id: str
     status: str
     rows: int|None
-    columns : int | None        
+    columns : int | None
+    target_column: str|None

@@ -1,6 +1,6 @@
 import { type ChangeEvent, type DragEvent, useState } from "react";
+import { DottedSurface } from "@/components/ui/dotted-surface";
 import { FallingPattern } from "@/components/ui/falling-pattern";
-import { StarsCanvas } from "@/components/ui/stars-canvas";
 
 type LandingProps = {
   onUploadFile: (file: File) => void;
@@ -53,22 +53,14 @@ export default function Landing({
       >
         <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,1)_100%)]" />
         <div className="pointer-events-none absolute inset-0 z-10 opacity-95 [filter:drop-shadow(0_0_10px_rgba(220,232,255,0.3))]">
-          <StarsCanvas
-            className="inset-0"
-            transparent
-            maxStars={520}
-            hue={214}
-            brightness={0.72}
-            speedMultiplier={0.9}
-            twinkleIntensity={8}
-          />
+          <DottedSurface className="inset-0" />
         </div>
 
         <div className="relative z-20 mx-auto flex w-[min(1120px,calc(100vw-56px))] flex-col items-center pb-12 pt-24 text-center text-slate-100 md:pb-16 md:pt-28">
           <h1 className="instrument-serif-regular mt-2 max-w-4xl text-5xl font-bold leading-[1.02] tracking-[-0.01em] md:text-7xl">
             Don&apos;t Train Blind.
           </h1>
-          <p className="mt-5 max-w-3xl text-xl text-slate-200 md:text-3xl">
+          <p className="mt-5 text-xl text-slate-200 md:whitespace-nowrap md:text-3xl">
             Know if your dataset is ML-ready before training your model.
           </p>
           <p className="mt-5 max-w-3xl text-base leading-relaxed text-slate-300 md:text-xl">

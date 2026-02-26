@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { uploadDataset } from "../services/datasetApi";
+import { getDatasetStatus, uploadDataset } from "../services/datasetApi";
 
 type UploadProps = {
   initialFile: File | null;
@@ -14,11 +14,14 @@ function stripCsv(name: string) {
 export default function Upload({ initialFile, onUploaded }: UploadProps) {
   const [file, setFile] = useState<File | null>(initialFile);
   const [datasetName, setDatasetName] = useState(initialFile ? stripCsv(initialFile.name) : "");
+  const [targetColumn, setTargetColumn] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [processingDatasetId, setProcessingDatasetId] = useState<string | null>(null);
+  const [processingStatus, setProcessingStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const canSubmit = Boolean(file && datasetName.trim() && !submitting);
+  const canSubmit = Boolean(file && datasetName.trim() && !submitting && !processingDatasetId);
 
   useEffect(() => {
     if (initialFile && !file) {
@@ -41,14 +44,50 @@ export default function Upload({ initialFile, onUploaded }: UploadProps) {
 
     setSubmitting(true);
     try {
-      const payload = await uploadDataset(file, datasetName.trim());
-      onUploaded(payload.dataset_id);
+      const payload = await uploadDataset(file, datasetName.trim(), targetColumn);
+      setProcessingDatasetId(payload.dataset_id);
+      setProcessingStatus(payload.status || "uploaded");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (!processingDatasetId) return;
+    let cancelled = false;
+    let timer: number | undefined;
+
+    const tick = async () => {
+      try {
+        const status = await getDatasetStatus(processingDatasetId);
+        if (cancelled) return;
+        setProcessingStatus(status.status);
+        if (status.status === "completed") {
+          setProcessingDatasetId(null);
+          onUploaded(processingDatasetId);
+          return;
+        }
+        if (status.status === "failed") {
+          setProcessingDatasetId(null);
+          setError("Analysis failed while preparing report visuals. Please retry upload.");
+          return;
+        }
+        timer = window.setTimeout(tick, 3000);
+      } catch (err: unknown) {
+        if (cancelled) return;
+        setProcessingDatasetId(null);
+        setError(err instanceof Error ? err.message : "Processing status check failed");
+      }
+    };
+
+    timer = window.setTimeout(tick, 1500);
+    return () => {
+      cancelled = true;
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [processingDatasetId, onUploaded]);
 
   return (
     <div className="min-h-screen bg-black px-5 py-24 text-slate-100">
@@ -106,7 +145,27 @@ export default function Upload({ initialFile, onUploaded }: UploadProps) {
             </div>
           </label>
 
+          <label className="block text-sm">
+            <span className="mb-1 block text-slate-300">Target column (optional)</span>
+            <input
+              type="text"
+              value={targetColumn}
+              onChange={(e) => setTargetColumn(e.target.value)}
+              className="w-full rounded-xl border border-white/15 bg-black/60 px-3 py-2 text-slate-100 outline-none transition focus:border-white/40"
+              placeholder="e.g. churn_flag"
+            />
+            <p className="mt-1 text-xs text-slate-400">
+              Add this to enable target-aware diagnostics and model simulation.
+            </p>
+          </label>
+
           {error ? <p className="text-sm text-rose-300">{error}</p> : null}
+          {processingDatasetId ? (
+            <p className="text-sm text-slate-300">
+              Processing dataset and generating visuals... Status:{" "}
+              <span className="font-semibold text-slate-100">{processingStatus ?? "processing"}</span>
+            </p>
+          ) : null}
 
           <button
             type="button"
@@ -114,7 +173,7 @@ export default function Upload({ initialFile, onUploaded }: UploadProps) {
             onClick={submit}
             className="w-full rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting ? "Uploading" : "Upload"}
+            {submitting ? "Uploading" : processingDatasetId ? "Processing..." : "Upload"}
           </button>
         </div>
       </div>

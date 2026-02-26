@@ -7,6 +7,7 @@ import LeakageCard from "../components/cards/LeakageCard";
 import MissingCard from "../components/cards/MissingCard";
 import OutlierCard from "../components/cards/OutlierCard";
 import IssuesPanel from "../components/report/IssuesPanel";
+import PlotsGallery from "../components/report/PlotsGallery";
 import ReportHeader from "../components/report/ReportHeader";
 import SentinelScore from "../components/report/SentinelScore";
 import type { ReportViewData } from "../components/report/types";
@@ -46,6 +47,8 @@ function buildQuickFacts(data: ReportViewData) {
   if (data.failed_analyzers.length > 0) {
     facts.push(`${data.failed_analyzers.length} analyzer(s) could not complete.`);
   }
+  if (data.modeling_risk) facts.push(`Modeling risk: ${data.modeling_risk}`);
+  if (data.recommended_actions?.length) facts.push(`Action: ${data.recommended_actions[0]}`);
 
   return facts.slice(0, 4);
 }
@@ -145,6 +148,8 @@ export default function Report({ datasetId, onBackToDashboard, onDeleted }: Repo
               <aside className="space-y-4 md:col-span-4 md:sticky md:top-24 md:self-start">
                 <DatasetSummary
                   score={data.sentinel_score}
+                  difficulty={data.dataset_difficulty}
+                  modelingRisk={data.modeling_risk}
                   rows={data.dataset.rows}
                   columns={data.dataset.columns}
                   numericColumns={Number(readSection(data.sections, "basic_stats")["numeric_columns"] ?? 0)}
@@ -156,6 +161,8 @@ export default function Report({ datasetId, onBackToDashboard, onDeleted }: Repo
                 <FailedBanner failedAnalyzers={data.failed_analyzers} />
               </aside>
             </section>
+
+            <PlotsGallery datasetId={datasetId} availablePlots={data.available_plots} />
           </div>
         ) : null}
       </div>

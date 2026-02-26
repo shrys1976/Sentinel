@@ -44,7 +44,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (path !== "/") return;
+    lastScrollY.current = window.scrollY;
+    setIsNavVisible(true);
+
     const onScroll = () => {
       const currentY = window.scrollY;
 
@@ -84,7 +86,7 @@ function App() {
     <div className="min-h-screen bg-black text-slate-100">
       <header
         className={`fixed left-0 top-0 z-30 w-full transition-all duration-500 ease-out ${
-          path !== "/" || isNavVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+          isNavVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
         }`}
       >
         <div className="flex w-full items-center justify-between border-b border-white/10 bg-slate-950/45 px-5 py-3 text-[11px] uppercase tracking-[0.12em] text-slate-200 backdrop-blur-md md:px-8 md:py-3.5">
@@ -153,7 +155,7 @@ function App() {
             initialFile={pendingUploadFile}
             onUploaded={(datasetId) => {
               setPendingUploadFile(null);
-              navigate(`/analysis/${datasetId}`);
+              navigate(`/report/${datasetId}`);
             }}
           />
         ) : null}

@@ -32,11 +32,13 @@ def upload_dataset(
     file: UploadFile = File(...),
     name: str | None = Form(default=None),
     dataset_name: str | None = Form(default=None),
+    target_column: str | None = Form(default=None),
     db: Session = Depends(get_db),
 ):
     resolved_name = (dataset_name or name or "").strip()
     if not resolved_name:
         raise HTTPException(status_code=422, detail="dataset_name is required")
+    resolved_target = (target_column or "").strip()
 
     validate_file_extension(file)
     validate_file_size(file)
@@ -46,6 +48,7 @@ def upload_dataset(
         db=db,
         file=file,
         dataset_name=resolved_name,
+        target_column=resolved_target or None,
         user_id=context.user_id,
         session_id=context.session_id,
     )
@@ -57,6 +60,7 @@ def upload_dataset(
         rows=dataset.rows,
         columns=dataset.columns,
         status=dataset.status,
+        target_column=dataset.target_column,
     )
 
 
@@ -73,6 +77,7 @@ def dataset_history(
             status=d.status,
             rows=d.rows,
             columns=d.columns,
+            target_column=d.target_column,
             created_at=str(d.created_at),
         )
         for d in datasets
@@ -104,6 +109,7 @@ def dataset_status(
         status=dataset.status,
         rows=dataset.rows,
         columns=dataset.columns,
+        target_column=dataset.target_column,
     )
 
 @router.delete("/{dataset_id}")

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from ..db.models import Dataset, Report
+from ..db.models import AnalysisPlot, Dataset, Report
 from ..storage.file_storage import delete_file, save_uploaded_file
 from ..utils.dataframe_loader import extract_dataset_metadata
 import logging
@@ -10,6 +10,7 @@ def create_dataset(
     db: Session,
     file,
     dataset_name: str,
+    target_column: str | None,
     user_id=None,
     session_id=None,
 ):
@@ -21,6 +22,7 @@ def create_dataset(
         id=dataset_id,
         name=dataset_name,
         file_path=path,
+        target_column=target_column,
         user_id=user_id,
         session_id=session_id,
         rows=rows,
@@ -124,6 +126,11 @@ def delete_dataset(
     reports = db.query(Report).filter(Report.dataset_id == dataset_id).all()
     for report in reports:
         db.delete(report)
+
+    # Delete persisted plot artifacts for this dataset.
+    plots = db.query(AnalysisPlot).filter(AnalysisPlot.dataset_id == dataset_id).all()
+    for plot in plots:
+        db.delete(plot)
 
     # Delete file from storage.
     delete_file(dataset.file_path)
