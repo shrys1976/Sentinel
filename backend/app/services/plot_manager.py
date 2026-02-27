@@ -64,3 +64,39 @@ def list_plot_types(db: Session, dataset_id: str) -> list[str]:
         row.plot_type
         for row in db.query(AnalysisPlot.plot_type).filter(AnalysisPlot.dataset_id == dataset_id).all()
     )
+
+
+def ensure_single_plot_for_dataset(
+    db: Session,
+    dataset_id: str,
+    file_path: str,
+    report_json: dict,
+    target_column: str | None,
+    plot_type: str,
+) -> bytes | None:
+    existing = get_plot_image_bytes(db, dataset_id, plot_type)
+    if existing:
+        return existing
+
+    if plot_type not in PLOT_NAMES:
+        return None
+
+    generated = generate_all_plot_bytes(
+        file_path=file_path,
+        report=report_json,
+        target_column=target_column,
+        requested_plot_names={plot_type},
+    )
+    payload = generated.get(plot_type)
+    if not payload:
+        return None
+
+    db.add(
+        AnalysisPlot(
+            dataset_id=dataset_id,
+            plot_type=plot_type,
+            image_data=payload,
+        )
+    )
+    db.commit()
+    return payload

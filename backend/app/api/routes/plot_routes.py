@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from ...analysis_engine.visualization_engine import PLOT_NAMES
 from ...core.dependencies import RequestContext, get_request_context
 from ...db.session import get_db
-from ...services.plot_manager import get_plot_image_bytes
+from ...services.plot_manager import ensure_single_plot_for_dataset, get_plot_image_bytes
 from ...services.report_service import get_authorized_report
 
 router = APIRouter(prefix="/plots", tags=["plots"])
@@ -39,6 +39,21 @@ def fetch_plot(
         raise HTTPException(status_code=400, detail="Analysis not completed")
 
     image_bytes = get_plot_image_bytes(db, dataset_id, plot_type)
+    if not image_bytes:
+        try:
+            image_bytes = ensure_single_plot_for_dataset(
+                db=db,
+                dataset_id=dataset_id,
+                file_path=dataset.file_path,
+                report_json=report.report_json if isinstance(report.report_json, dict) else {},
+                target_column=dataset.target_column,
+                plot_type=plot_type,
+            )
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc))
+        except Exception:
+            raise HTTPException(status_code=500, detail="Plot regeneration failed")
+
     if not image_bytes:
         raise HTTPException(status_code=404, detail=f"Plot '{plot_type}' not found")
 

@@ -47,7 +47,7 @@ export default function PlotsGallery({ datasetId, availablePlots }: PlotsGallery
   const [error, setError] = useState<string | null>(null);
 
   const items = useMemo(() => {
-    const allowed = new Set(availablePlots ?? PLOT_CATALOG.map((plot) => plot.key));
+    const allowed = new Set(availablePlots ?? []);
     return PLOT_CATALOG.filter((plot) => allowed.has(plot.key));
   }, [availablePlots]);
 

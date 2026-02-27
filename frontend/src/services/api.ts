@@ -18,8 +18,12 @@ function getOrCreateSessionId() {
 
 async function getAccessToken() {
   if (!supabase) return null;
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token ?? null;
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token ?? null;
+  } catch {
+    return null;
+  }
 }
 
 async function request(input: string, init: RequestInit = {}) {
