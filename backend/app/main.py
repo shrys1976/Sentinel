@@ -23,10 +23,18 @@ cors_allow_origins = [
     if origin.strip()
 ]
 
+default_cors_regex = r"https?://(localhost|127\.0\.0\.1)(:\d+)?|https://.*\.vercel\.app"
+configured_regex = (settings.CORS_ALLOW_ORIGIN_REGEX or "").strip()
+if configured_regex:
+    # Always include Vercel preview/prod domains even when env regex is customized.
+    cors_allow_origin_regex = f"(?:{configured_regex})|(?:https://.*\\.vercel\\.app)"
+else:
+    cors_allow_origin_regex = default_cors_regex
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_allow_origins,
-    allow_origin_regex=settings.CORS_ALLOW_ORIGIN_REGEX,
+    allow_origin_regex=cors_allow_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
