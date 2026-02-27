@@ -162,6 +162,18 @@ export default function Landing({
               <h3 className="text-2xl font-semibold text-slate-100">Outlier Detection</h3>
               <p className="mt-2 text-slate-300">Spot anomalies affecting model stability.</p>
             </article>
+            <article className="rounded-2xl border border-white/15 bg-slate-900/45 p-6 backdrop-blur-sm">
+              <h3 className="text-2xl font-semibold text-slate-100">Visual Diagnostics</h3>
+              <p className="mt-2 text-slate-300">
+                Auto-generated heatmaps and distribution plots for fast issue triage.
+              </p>
+            </article>
+            <article className="rounded-2xl border border-white/15 bg-slate-900/45 p-6 backdrop-blur-sm">
+              <h3 className="text-2xl font-semibold text-slate-100">Model Readiness Scoring</h3>
+              <p className="mt-2 text-slate-300">
+                V2 scoring calibrated with learnability, leakage, and structural risk signals.
+              </p>
+            </article>
           </div>
         </div>
       </section>
@@ -181,24 +193,56 @@ export default function Landing({
                 </h3>
               </div>
               <span className="inline-flex rounded-full bg-indigo-400/20 px-4 py-2 text-sm font-bold text-indigo-100">
-                Sentinel Score: 72 / 100
+                Sentinel Score: 81 / 100
               </span>
             </div>
 
-            <div className="mt-6 grid gap-6 md:grid-cols-2">
-              <div>
+            <div className="mt-6 grid gap-6 md:grid-cols-3">
+              <article className="rounded-xl border border-white/10 bg-white/5 p-4">
                 <h4 className="text-lg font-semibold text-slate-100">Critical Issues</h4>
                 <ul className="mt-2 list-disc space-y-2 pl-5 text-slate-300">
-                  <li>Target Leakage Detected</li>
-                  <li>Severe Class Imbalance</li>
+                  <li>Potential timestamp leakage</li>
+                  <li>High missing ratio in income fields</li>
                 </ul>
-              </div>
-              <div>
+              </article>
+
+              <article className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <h4 className="text-lg font-semibold text-slate-100">Model Simulation</h4>
+                <ul className="mt-2 space-y-2 text-slate-300">
+                  <li>Baseline AUC: 0.79</li>
+                  <li>Overfitting gap: 0.05</li>
+                  <li>Modeling risk: Moderate</li>
+                </ul>
+              </article>
+
+              <article className="rounded-xl border border-white/10 bg-white/5 p-4">
                 <h4 className="text-lg font-semibold text-slate-100">Recommendations</h4>
                 <ul className="mt-2 list-disc space-y-2 pl-5 text-slate-300">
-                  <li>Drop transaction_id column</li>
-                  <li>Apply stratified split</li>
+                  <li>Remove identifier-like columns</li>
+                  <li>Use class-weight balancing</li>
+                  <li>Apply median imputation on sparse features</li>
                 </ul>
+              </article>
+            </div>
+
+            <div className="mt-6 rounded-xl border border-white/10 bg-black/35 p-4">
+              <h4 className="text-lg font-semibold text-slate-100">Visual Diagnostics</h4>
+              <div className="mt-3 grid gap-3 text-sm text-slate-300 md:grid-cols-5">
+                <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-center">
+                  Missing Heatmap
+                </span>
+                <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-center">
+                  Target Distribution
+                </span>
+                <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-center">
+                  Feature Importance
+                </span>
+                <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-center">
+                  Numeric Distribution
+                </span>
+                <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-center">
+                  Correlation Heatmap
+                </span>
               </div>
             </div>
           </article>
@@ -265,6 +309,9 @@ export default function Landing({
               </a>
             </div>
           </div>
+          <p className="mx-auto mt-4 w-[min(1120px,calc(100vw-56px))] text-center text-xs tracking-[0.06em] text-slate-400/90">
+            &copy; shrys 2026
+          </p>
         </footer>
       </section>
     </>
