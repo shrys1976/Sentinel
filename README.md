@@ -1,51 +1,53 @@
 # Sentinel
 
-Sentinel is an ML data quality platform that analyzes tabular datasets before model training.  
-It detects leakage risk, missing data patterns, class imbalance, outliers, and structural issues, then returns an actionable report and a sentinel score.
+Sentinel is an ML data quality and model-readiness platform for tabular datasets.  
+Upload a CSV, run deterministic diagnostics, and get a production-style report with actionable fixes and visual diagnostics.
 
-## What It Does
+## Highlights
 
-- Upload CSV datasets and trigger analysis automatically.
-- Run analyzer pipeline for:
-  - basic dataset stats
-  - missing value diagnostics
-  - categorical feature checks
-  - class imbalance diagnostics
+- Upload CSV datasets and run analysis asynchronously.
+- Optional target-aware analysis (target column can be provided at upload time).
+- V2 diagnostics stack:
+  - missingness + structural risks
   - leakage heuristics
-  - outlier detection
-- Track dataset processing status (`uploaded -> processing -> completed/failed`).
-- View analysis reports with sectioned insights and recommendations.
-- Support guest sessions and authenticated users (Supabase auth).
-- Provide history for logged-in users in the Analyses page.
+  - categorical / outlier checks
+  - target signal diagnostics
+  - lightweight model simulation
+  - recommendation engine
+- V2 calibrated scoring (`sentinel_score`) with difficulty + modeling risk labels.
+- Visual diagnostics are generated once during analysis and persisted in DB.
+- Report page only opens after processing is complete.
+- Works for guest sessions and authenticated users (Supabase).
 
 ## Tech Stack
 
 ### Frontend
 - React + TypeScript + Vite
 - Tailwind CSS
-- shadcn/ui primitives
+- shadcn-style component structure (`frontend/components/ui`)
 - Supabase JS client
 
 ### Backend
 - FastAPI
 - SQLAlchemy
-- Pandas
+- Pandas + SciPy + scikit-learn + Matplotlib
 - PostgreSQL (production) / SQLite (local fallback)
 - Background processing via FastAPI `BackgroundTasks`
 
-### Infrastructure
+### Infra
 - Frontend: Vercel
 - Backend: Render
 - Database: Neon Postgres
 - Auth: Supabase
 
-## Repository Structure
+## Repository Layout
 
 ```text
 .
-├── frontend/        # Vite React app
-├── backend/         # FastAPI API + analysis engine
-├── docs/            # project docs
+├── frontend/          # Vite React app
+├── backend/           # FastAPI API + analysis engine
+├── render.yaml        # Render blueprint config
+├── runtime.txt        # Runtime pin fallback
 └── README.md
 ```
 
@@ -61,7 +63,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-Backend default URL: `http://localhost:8000`
+Backend URL: `http://localhost:8000`
 
 ### 2. Frontend
 
@@ -71,7 +73,7 @@ npm install
 npm run dev
 ```
 
-Frontend default URL: `http://localhost:5173`
+Frontend URL: `http://localhost:5173`
 
 ## Environment Variables
 
@@ -87,13 +89,8 @@ Required:
 Optional:
 
 - `APP_NAME` (default: `SentinelAI`)
-- `CORS_ALLOW_ORIGINS` (comma-separated origins)
+- `CORS_ALLOW_ORIGINS` (comma-separated)
 - `CORS_ALLOW_ORIGIN_REGEX`
-
-Reference templates:
-
-- `backend/.env.example`
-- `backend/.env.render.example`
 
 ### Frontend (`frontend/.env`)
 
@@ -104,17 +101,34 @@ Reference templates:
 ## API Overview
 
 ### Datasets
-- `POST /datasets/upload` - upload CSV + create dataset + queue analysis
-- `GET /datasets` - list current user/session datasets
-- `GET /datasets/{dataset_id}/status` - processing status
-- `DELETE /datasets/{dataset_id}` - delete dataset + cleanup storage
+- `POST /datasets/upload`  
+  multipart: `file`, `dataset_name`, optional `target_column`
+- `GET /datasets`
+- `GET /datasets/{dataset_id}/status`
+- `DELETE /datasets/{dataset_id}`
 
 ### Reports
-- `GET /reports/{dataset_id}` - raw report/status payload
-- `GET /reports/{dataset_id}/view` - structured report view payload
+- `GET /reports/{dataset_id}` (raw payload/status)
+- `GET /reports/{dataset_id}/view` (frontend view payload)
+
+### Plots
+- `GET /plots/{dataset_id}/{plot_type}` returns `image/png`
+- Plot types:
+  - `missing_heatmap`
+  - `target_distribution`
+  - `feature_importance`
+  - `numeric_distribution`
+  - `correlation_heatmap`
 
 ### Health
 - `GET /health`
+
+## Plot Storage Model
+
+- Plots are generated in worker after analysis.
+- Stored in `analysis_plots` table (`dataset_id + plot_type` unique).
+- Served directly from DB bytes (no on-demand regeneration on normal path).
+- Delete dataset also removes persisted plots.
 
 ## Deployment
 
@@ -124,29 +138,28 @@ Reference templates:
 - Build command: `npm run build`
 - Output directory: `dist`
 
-Set env vars in Vercel:
-
+Set:
 - `VITE_API_URL=https://<your-render-backend>.onrender.com`
-- `VITE_SUPABASE_URL=<your-supabase-url>`
-- `VITE_SUPABASE_ANON_KEY=<your-supabase-anon-key>`
+- `VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co`
+- `VITE_SUPABASE_ANON_KEY=<anon-key>`
 
 ### Backend (Render)
 
+Use `render.yaml` (recommended) or set manually:
 - Root directory: `backend`
-- Build command: `pip install -r requirements.txt`
+- Build command: `python -m pip install --upgrade pip && pip install --only-binary=:all: -r requirements.txt`
 - Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-- Uses `backend/Procfile` and `backend/runtime.txt`
 
-Set env vars in Render:
-
-- `DATABASE_URL=postgresql+psycopg2://...` (Neon)
+Set:
+- `DATABASE_URL=postgresql+psycopg2://...`
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
 - `SUPABASE_JWT_SECRET`
 - `CORS_ALLOW_ORIGINS=https://<your-vercel-domain>`
 
-## Notes
+## Troubleshooting
 
-- Local development may use SQLite by default.
-- Production should use managed Postgres (Neon recommended).
+- `ERR_CERT_COMMON_NAME_INVALID` (Supabase): verify exact `VITE_SUPABASE_URL`.
+- CORS blocked from Vercel: verify backend env + redeploy latest CORS fixes.
+- Render SciPy build failures: use latest requirements + wheel-only install command.
 
