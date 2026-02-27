@@ -1,5 +1,8 @@
+import re
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 
 from .api.routes.dataset_routes import router as dataset_router
 from .api.routes.plot_routes import router as plot_router
@@ -39,6 +42,41 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+_cors_origin_re = re.compile(r"https?://(localhost|127\.0\.0\.1)(:\d+)?$|https://.*\.vercel\.app$")
+_cors_allow_origin_set = set(cors_allow_origins)
+
+
+def _is_allowed_origin(origin: str) -> bool:
+    if origin in _cors_allow_origin_set:
+        return True
+    return bool(_cors_origin_re.match(origin))
+
+
+@app.middleware("http")
+async def ensure_cors_headers(request, call_next):
+    origin = request.headers.get("origin")
+
+    if origin and _is_allowed_origin(origin) and request.method == "OPTIONS":
+        preflight = Response(status_code=204)
+        preflight.headers["Access-Control-Allow-Origin"] = origin
+        preflight.headers["Access-Control-Allow-Credentials"] = "true"
+        preflight.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+        preflight.headers["Access-Control-Allow-Headers"] = request.headers.get(
+            "access-control-request-headers", "*"
+        )
+        preflight.headers["Vary"] = "Origin"
+        return preflight
+
+    response = await call_next(request)
+
+    if origin and _is_allowed_origin(origin):
+        response.headers.setdefault("Access-Control-Allow-Origin", origin)
+        response.headers.setdefault("Access-Control-Allow-Credentials", "true")
+        response.headers.setdefault("Vary", "Origin")
+
+    return response
 
 app.include_router(dataset_router)
 app.include_router(report_router)
