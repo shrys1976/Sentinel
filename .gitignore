@@ -19,7 +19,7 @@ backend/.env
 # Uploads
 backend/uploads/*
 !backend/uploads/.gitkeep
-
+Group 1.png
 # OS
 .DS_Store
 Thumbs.db
