@@ -3,6 +3,11 @@
 Sentinel is an ML data quality and model-readiness platform for tabular datasets.  
 Upload a CSV, run deterministic diagnostics, and get a production-style report with actionable fixes and visual diagnostics.
 
+## Screenshots
+<img width="1920" height="1536" alt="257shots_so" src="https://github.com/user-attachments/assets/288288dc-335f-4ec5-877b-617248ee6bb9" />
+<img width="1920" height="1536" alt="57shots_so" src="https://github.com/user-attachments/assets/8a983a86-dade-4587-81b8-5a952fbcda1e" />
+<img width="1920" height="1536" alt="158shots_so" src="https://github.com/user-attachments/assets/02ed4f8f-710e-4ddb-ae20-e1c4360d2215" />
+
 ## Highlights
 
 - Upload CSV datasets and run analysis asynchronously.
@@ -162,4 +167,5 @@ Set:
 - `ERR_CERT_COMMON_NAME_INVALID` (Supabase): verify exact `VITE_SUPABASE_URL`.
 - CORS blocked from Vercel: verify backend env + redeploy latest CORS fixes.
 - Render SciPy build failures: use latest requirements + wheel-only install command.
+
 
